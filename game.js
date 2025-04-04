@@ -93,7 +93,7 @@ const gameLoop = () => {
   }
 
   // bestimme frame position der animation
-  if(frames % 6 === 0) {
+  if(frames % 6 === 0 && direction) {
     frameIndex = frameIndex < 8 ? frameIndex +1 : 0
   }
 
