@@ -118,7 +118,6 @@ const gameLoop = () => {
   );
 
   frames++;
-  console.log({frames})
 
   // request animation frame methode wartet
   // bis der f*** monitor wieder bereit ist ein bild zu zeichnen
