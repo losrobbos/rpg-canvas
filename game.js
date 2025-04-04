@@ -13,10 +13,10 @@ canvas.height = canvas.clientHeight;
 
 // load background map image
 const imgBg = new Image();
-imgBg.src = "./rpgTilemap.png";
+imgBg.src = "./assets/images/rpgTilemap.png";
 
 const imgPlayer = new Image();
-imgPlayer.src = "./Hero.png";
+imgPlayer.src = "./assets/images/Hero.png";
 
 // mit map offset verschieben wir den startpunkt auf der karte
 // zu dem bereich, den wir am anfang sehen wollen
