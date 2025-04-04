@@ -30,11 +30,6 @@ const mapOffset = {
 // image is fully loaded and accessible
 // and therefore: drawable
 imgBg.onload = () => {
-  // this method is nice to draw out image in ORIGINAL SIZE into the canvas,
-  // even if it does not fit
-  // makes sense if we want to EXPLORE the image / map step by step
-  // => good use case: overworlds
-  ctx.drawImage(imgBg, mapOffset.x, mapOffset.y);
 
   // this method is nice to fill the whole canvas with out image
   // this might be useful if image and canvas have same aspect ratio and
@@ -51,28 +46,38 @@ imgBg.onload = () => {
     // anzahl sheet reihen = 21
     // tile größe => breite / spalten = 64x64px
 
-    const row = 10;
-    const col = 0;
+    const rowAnimation = 10;
 
     const playerPositionInitial = {
       x: 285,
       y: 190,
     };
 
-    ctx.drawImage(
-      imgPlayer,
-      // position von sprite (=einzelbild) im spritesheet
-      col * TILE_SIZE,
-      row * TILE_SIZE,
-      // width & height des Tiles = 64px
-      TILE_SIZE,
-      TILE_SIZE,
-      // position im canvas
-      playerPositionInitial.x,
-      playerPositionInitial.y,
-      // größe im canvas
-      TILE_SIZE / 2,
-      TILE_SIZE / 2
-    );
+    for(let colSprite=0; colSprite<=8; colSprite++) {
+
+      setTimeout(() => {
+
+        // zeichne background
+        ctx.drawImage(imgBg, mapOffset.x, mapOffset.y);
+
+        // zeichne playersprite (=ein einzelbild aus spritesheet)
+        ctx.drawImage(
+          imgPlayer,
+          // position von sprite (=einzelbild) im spritesheet
+          colSprite * TILE_SIZE,
+          rowAnimation * TILE_SIZE,
+          // width & height des Tiles = 64px
+          TILE_SIZE,
+          TILE_SIZE,
+          // position im canvas
+          playerPositionInitial.x,
+          playerPositionInitial.y,
+          // größe im canvas
+          TILE_SIZE,
+          TILE_SIZE
+        );
+      }, 100 * colSprite);
+    }
   };
 };
+
