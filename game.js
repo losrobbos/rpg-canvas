@@ -26,75 +26,98 @@ const mapOffset = {
   y: -200,
 };
 
-const TILE_SIZE = 64;
+// wie groß in Pixel ist ein Einzelbild (=Sprite) in dem Sheet?
 // spritesheet tile size berechnung
 // sheet width = 832
 // sheet height = 1344
 // anzahl sheet spalten = 13
 // anzahl sheet reihen = 21
-// tile größe => breite / spalten = 64x64px
+// bildbreite / spalten = 64 (pixel)
+const TILE_SIZE = 64;
 
+// kleine border um jeden Sprite, den wir später nicht drawen wollen
+const TILE_BORDER = 1;
+
+// player position of the map, relative to top left corner of canvas
 const playerPositionInitial = {
   x: 285,
   y: 190,
 };
 
 /** @type {"up" | "down" | "right" | "left"} */
-let direction = undefined
+let direction = undefined;
 let rowAnimation = 10;
 
 window.addEventListener("keydown", (e) => {
-  switch(e.key) {
-    case "ArrowUp": 
-      direction = "up"; break;
-    case "ArrowDown": 
-      direction = "down"; break;
-    case "ArrowLeft": 
-      direction = "left"; break;
-    case "ArrowRight": 
-      direction = "right"; break;
+  switch (e.key) {
+    case "ArrowUp":
+      direction = "up";
+      break;
+    case "ArrowDown":
+      direction = "down";
+      break;
+    case "ArrowLeft":
+      direction = "left";
+      break;
+    case "ArrowRight":
+      direction = "right";
+      break;
   }
-})
+});
 
 window.addEventListener("keyup", (e) => {
-  switch(e.key) {
-    case "ArrowUp": 
-    case "ArrowDown": 
-    case "ArrowLeft": 
-    case "ArrowRight": 
-      direction = undefined;
+  switch (e.key) {
+    case "ArrowUp":
+      if (direction === "up") direction = undefined;
+      break;
+    case "ArrowDown":
+      if (direction === "down") direction = undefined;
+      break;
+    case "ArrowLeft":
+      if (direction === "left") direction = undefined;
+      break;
+    case "ArrowRight":
+      if (direction === "right") direction = undefined;
+      break;
   }
-})
+});
 
 // zähle wie oft schon ein bild gezeichnet wurde
 let frames = 0;
 let frameIndex = 0;
 
-const gameLoop = () => {
+// wert in pixel, den der player sich in eine Richtung bewegen (pro frame) bewegen soll, wenn ein key gedrückt ist
+const PLAYER_SPEED = 2
 
-  // set animation row in sheet based on DIRECTION player chose
-  switch(direction) {
-    case "up": 
-      rowAnimation = 8; 
-      mapOffset.y++;
+const gameLoop = () => {
+  // setze die ROW im Character Spritesheet je nach DIRECTION des players
+  // beispiel: up => wähle Reihe 8 aus dem Spritesheet mit den UP Animation Sprites / Frames
+  // bewege zusätzlich die MAP entgegen der Direction des players! 
+  // => so bleibt der player immer in der mitte vom canvas und nur die map bewegt sich!
+  switch (direction) {
+    case "up":
+      rowAnimation = 8;
+      mapOffset.y += PLAYER_SPEED;
       break;
-    case "left": 
-      mapOffset.x++;
-      rowAnimation = 9; 
+    case "left":
+      mapOffset.x += PLAYER_SPEED;
+      rowAnimation = 9;
       break;
-    case "down": 
-      rowAnimation = 10; 
-      mapOffset.y--;
+    case "down":
+      rowAnimation = 10;
+      mapOffset.y -= PLAYER_SPEED;
       break;
-    case "right": 
-      mapOffset.x--;
-      rowAnimation = 11; 
+    case "right":
+      mapOffset.x -= PLAYER_SPEED;
+      rowAnimation = 11;
       break;
   }
 
-  // bestimme frame position der animation
-  if(frames % 6 === 0 && direction) {
-    frameIndex = frameIndex < 8 ? frameIndex +1 : 0
+  // bestimme frame position der animation (also die spalte (!) in der animation row)
+  // schalte den sprite nur alle 6 frames der game loop weiter, damit die animation nicht zu schnell läuft
+  // animiere den player auch nur, wenn wir der player sich bewegt (=> also direction gesetzt ist)
+  if (frames % 6 === 0 && direction) {
+    frameIndex = frameIndex < 8 ? frameIndex + 1 : 0;
   }
 
   // zeichne background
@@ -104,11 +127,13 @@ const gameLoop = () => {
   ctx.drawImage(
     imgPlayer,
     // position von sprite (=einzelbild) im spritesheet
-    frameIndex * TILE_SIZE,
-    rowAnimation * TILE_SIZE,
+    // aber starte Position erst einen Pixer unter der Border, damit border nicht mitgezeichnet wird
+    frameIndex * TILE_SIZE + TILE_BORDER,
+    rowAnimation * TILE_SIZE + TILE_BORDER,
     // width & height des Tiles = 64px
-    TILE_SIZE,
-    TILE_SIZE,
+    // abzgl. zweimal der border um den sprite => soll nicht gezeichnet werden
+    TILE_SIZE - TILE_BORDER*2,
+    TILE_SIZE - TILE_BORDER*2,
     // position im canvas
     playerPositionInitial.x,
     playerPositionInitial.y,
