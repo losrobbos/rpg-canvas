@@ -15,6 +15,7 @@ canvas.height = canvas.clientHeight;
 const imgBg = new Image();
 imgBg.src = "./assets/images/rpgTilemap.png";
 
+// load player spritesheet image (with animation sprite)
 const imgPlayer = new Image();
 imgPlayer.src = "./assets/images/Hero.png";
 
@@ -38,16 +39,25 @@ const TILE_SIZE = 64;
 // kleine border um jeden Sprite, den wir später nicht drawen wollen
 const TILE_BORDER = 1;
 
+// wert in pixel, den der player sich in eine Richtung bewegen (pro frame) bewegen soll, wenn ein key gedrückt ist
+const PLAYER_SPEED = 2
+
 // player position of the map, relative to top left corner of canvas
 const playerPositionInitial = {
   x: 285,
   y: 190,
 };
 
+// direction speichert die aktuelle richtung des players 
+// (soll nur gesetzt sein, wenn der player gerade einen arrow key gedrückt hält)
+
 /** @type {"up" | "down" | "right" | "left"} */
 let direction = undefined;
+
+// start animation => player zeigt nach unten (reihe 10 des Spritesheets)
 let rowAnimation = 10;
 
+// ändere direction des player bei arrow key
 window.addEventListener("keydown", (e) => {
   switch (e.key) {
     case "ArrowUp":
@@ -65,6 +75,10 @@ window.addEventListener("keydown", (e) => {
   }
 });
 
+// stoppe aktuelle direction des players bei release des arrow key
+// aber stoppe nur die AKTUELLE richtung des players!
+// beispiel: player hält erst RIGHT key und dann UP key gedrückt und hält beide. 
+// - aktueller player UP move soll nur gestoppt werden, wenn player UP key released, nicht den (alten) RIGHT key  
 window.addEventListener("keyup", (e) => {
   switch (e.key) {
     case "ArrowUp":
@@ -86,9 +100,6 @@ window.addEventListener("keyup", (e) => {
 let frames = 0;
 let frameIndex = 0;
 
-// wert in pixel, den der player sich in eine Richtung bewegen (pro frame) bewegen soll, wenn ein key gedrückt ist
-const PLAYER_SPEED = 2
-
 const gameLoop = () => {
   // setze die ROW im Character Spritesheet je nach DIRECTION des players
   // beispiel: up => wähle Reihe 8 aus dem Spritesheet mit den UP Animation Sprites / Frames
@@ -100,16 +111,16 @@ const gameLoop = () => {
       mapOffset.y += PLAYER_SPEED;
       break;
     case "left":
-      mapOffset.x += PLAYER_SPEED;
       rowAnimation = 9;
+      mapOffset.x += PLAYER_SPEED;
       break;
     case "down":
       rowAnimation = 10;
       mapOffset.y -= PLAYER_SPEED;
       break;
     case "right":
-      mapOffset.x -= PLAYER_SPEED;
       rowAnimation = 11;
+      mapOffset.x -= PLAYER_SPEED;
       break;
   }
 
@@ -145,9 +156,9 @@ const gameLoop = () => {
   frames++;
 
   // request animation frame methode wartet
-  // bis der f*** monitor wieder bereit ist ein bild zu zeichnen
+  // bis der f*** monitor wieder bereit ist, ein neues bild zu zeichnen
   requestAnimationFrame(gameLoop);
 };
 
-// start game loop
+// starte game loop (="slow" endless loop, but fast enough to draw smoothly to screen 60 times a second)
 gameLoop();
